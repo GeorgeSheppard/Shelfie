@@ -1,7 +1,12 @@
 import { z } from "zod";
 
 export const MAX_FILE_SIZE_MB = 5;
-export const ACCEPTED_IMAGE_FORMATS = ["image/png", "image/jpeg"];
+export const ACCEPTED_IMAGE_FORMATS = [
+  "image/png",
+  "image/jpeg",
+  "image/heic",
+  "image/heif",
+];
 
 export const imageValidator = z
   .any()

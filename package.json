@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "prebuild": "curl -o openapi.json https://raw.githubusercontent.com/GeorgeSheppard/api.georgesheppard.dev/master/generated/openapi/georgesheppard-spec.json && pnpm generate:api",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

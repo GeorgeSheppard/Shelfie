@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(git pull:*)",
+      "Bash(pnpm install)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm add:*)",
+      "Bash(curl:*)",
+      "Bash(pnpm generate:api:*)"
+    ]
+  }
+}

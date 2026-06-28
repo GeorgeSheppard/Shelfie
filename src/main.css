@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+@font-face {
+  font-family: "Geist";
+  src: url("/assets/Geist-VariableFont_wght.ttf");
+  font-display: optional;
+}
+
+:root {
+  font-family: "Geist", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  :root {
+    --background: 0 20% 95%; /* Creamy white */
+    --foreground: 0 10% 20%; /* Soft gray for text */
+    --card: 0 50% 98%; /* Lighter cream */
+    --card-foreground: 0 15% 30%; /* Slightly darker text */
+    --popover: 0 45% 98%; /* Soft cream for overlays */
+    --popover-foreground: 0 10% 20%; /* Gray text */
+    --primary: 0 60% 70%; /* Strawberry red */
+    --primary-foreground: 0 100% 98%; /* Cream for text */
+    --secondary: 0 40% 80%; /* Soft pink */
+    --secondary-foreground: 0 100% 98%; /* Cream for text */
+    --muted: 0 30% 90%; /* Very light pink */
+    --muted-foreground: 0 10% 40%; /* Soft gray */
+    --accent: 0 55% 75%; /* Brighter strawberry red */
+    --accent-foreground: 0 100% 98%; /* Cream for text */
+    --destructive: 0 90% 43%; /* Bold red */
+    --destructive-foreground: 0 100% 98%; /* Cream for text */
+    --border: 0 25% 85%; /* Light pink border */
+    --input: 0 20% 90%; /* Soft cream input background */
+    --ring: 0 60% 70%; /* Strawberry red highlight */
+    --radius: 0.5rem; /* Keep this consistent */
+  }
+  .dark {
+    --background: 240 15% 10%; /* Deep indigo */
+    --foreground: 0 0% 98%; /* Soft cream text */
+    --card: 240 15% 12%; /* Slightly lighter indigo */
+    --card-foreground: 0 0% 95%; /* Cream text */
+    --popover: 240 15% 8%; /* Very deep indigo */
+    --popover-foreground: 0 0% 98%; /* Cream text */
+    --primary: 0 65% 55%; /* Muted strawberry red */
+    --primary-foreground: 0 10% 98%; /* Light cream */
+    --secondary: 0 40% 50%; /* Soft dusky pink */
+    --secondary-foreground: 0 10% 98%; /* Light cream */
+    --muted: 0 25% 20%; /* Muted warm pink */
+    --muted-foreground: 0 15% 80%; /* Subtle light gray */
+    --accent: 0 65% 60%; /* Bright strawberry red */
+    --accent-foreground: 0 5% 98%; /* Light cream */
+    --destructive: 0 78% 68%; /* Rich red */
+    --destructive-foreground: 0 10% 98%; /* Cream */
+    --border: 240 10% 25%; /* Muted blue-gray */
+    --input: 240 10% 20%; /* Soft deep blue */
+    --ring: 0 65% 55%; /* Muted strawberry red highlight */
+    --radius: 0.5rem; /* Keep this consistent */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

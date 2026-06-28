@@ -1,7 +1,10 @@
 import Axios, { AxiosRequestConfig } from 'axios';
 
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.georgesheppard.dev';
+
 export const AXIOS_INSTANCE = Axios.create({
-  baseURL: '/api', // Proxied to api.georgesheppard.dev via _redirects or vite dev server
+  baseURL: API_BASE_URL,
 });
 
 export const axiosInstance = <T>(

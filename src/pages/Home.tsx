@@ -29,7 +29,7 @@ export const Home = () => {
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          signal: AbortSignal.timeout(30000),
+          signal: AbortSignal.timeout(120000),
         }
       );
       return data;

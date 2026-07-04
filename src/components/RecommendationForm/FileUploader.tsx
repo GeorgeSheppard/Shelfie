@@ -60,7 +60,7 @@ export const FileUploader = ({ formControl, submit, isSubmitting }: Props) => {
                 className="hidden"
                 type="file"
                 placeholder="image"
-                accept={ACCEPTED_IMAGE_FORMATS.join(",")}
+                accept={[...ACCEPTED_IMAGE_FORMATS, ".heic", ".heif"].join(",")}
                 {...rest}
                 onClick={(event) => {
                   (event.target as HTMLInputElement).value = "";

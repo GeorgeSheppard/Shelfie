@@ -140,12 +140,34 @@ const FormDescription = React.forwardRef<
 })
 FormDescription.displayName = "FormDescription"
 
+// For array fields (e.g. multiple file uploads), react-hook-form nests each
+// item's error under the field instead of setting a top-level message, so
+// `error.message` is undefined even though a real message exists deeper down.
+const findErrorMessage = (error: unknown): string | undefined => {
+  if (!error || typeof error !== "object") {
+    return undefined
+  }
+
+  if ("message" in error && typeof error.message === "string" && error.message) {
+    return error.message
+  }
+
+  for (const value of Object.values(error)) {
+    const message = findErrorMessage(value)
+    if (message) {
+      return message
+    }
+  }
+
+  return undefined
+}
+
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message) : children
+  const body = error ? findErrorMessage(error) ?? children : children
 
   if (!body) {
     return null

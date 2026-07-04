@@ -13,7 +13,7 @@ export const DisplayError = ({ error }: { error: unknown }) => {
       } else if (errorMessage.includes("file type") || errorMessage.includes("format")) {
         text = "Hmm, we were expecting a different file type there...";
       } else if (errorMessage.includes("too large") || errorMessage.includes("size")) {
-        text = "Whoops, your file is too large! Uploaded file must be less than 15MB.";
+        text = "Whoops, your file is too large! Uploaded file must be less than 50MB.";
       } else if (errorMessage.includes("no file") || errorMessage.includes("missing")) {
         text = "Hmm, we were expecting an image, please try again.";
       } else if (errorMessage.includes("generation") || errorMessage.includes("extract")) {

@@ -41,9 +41,12 @@ export const AddImagesButton = ({ requestId, onAdded }: Props) => {
         accept={[...ACCEPTED_IMAGE_FORMATS, ".heic", ".heif"].join(",")}
         onChange={(event) => {
           const files = event.target.files;
+          // Copy files out to a plain array before clearing the input — resetting
+          // `value` can empty out the live FileList `files` still refers to.
+          const fileArray = files ? Array.from(files) : [];
           event.target.value = "";
-          if (!files || files.length === 0) return;
-          mutation.mutate(Array.from(files));
+          if (fileArray.length === 0) return;
+          mutation.mutate(fileArray);
         }}
       />
       <Button

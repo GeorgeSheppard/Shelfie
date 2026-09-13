@@ -12,7 +12,11 @@
     "generate:api": "orval --config orval.config.ts",
     "deploy": "pnpm build && wrangler pages deploy dist --project-name=shelfie",
     "deploy:preview": "pnpm build && wrangler pages deploy dist --project-name=shelfie --branch=preview",
-    "pages:dev": "pnpm build && wrangler pages dev dist"
+    "pages:dev": "pnpm build && wrangler pages dev dist",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "typecheck:e2e": "tsc --noEmit -p tsconfig.e2e.json"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -40,6 +44,7 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@orval/core": "^8.19.0",
+    "@playwright/test": "^1.63.0",
     "@tanstack/react-query-devtools": "^5.64.1",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.18",

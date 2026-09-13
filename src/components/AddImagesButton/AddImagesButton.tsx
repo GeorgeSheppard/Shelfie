@@ -1,6 +1,7 @@
 import { useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AXIOS_INSTANCE } from "@/lib/axios";
+import { getGetApiProfileRequestIdQueryKey } from "@/api/generated/hooks";
 import { Button } from "@/components/ui/button";
 import { ACCEPTED_IMAGE_FORMATS } from "@/components/RecommendationForm/validator";
 
@@ -11,6 +12,7 @@ interface Props {
 
 export const AddImagesButton = ({ requestId, onAdded }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   // Custom mutation for multiple file upload, matching the from-bookcase upload on Home.
   const mutation = useMutation({
@@ -28,7 +30,14 @@ export const AddImagesButton = ({ requestId, onAdded }: Props) => {
       });
       return data;
     },
-    onSuccess: (data) => onAdded(data.recommendationId),
+    onSuccess: (data) => {
+      // Otherwise navigating back to this page can show the pre-upload cached photo
+      // list before the background refetch catches up.
+      queryClient.invalidateQueries({
+        queryKey: getGetApiProfileRequestIdQueryKey(requestId),
+      });
+      onAdded(data.recommendationId);
+    },
   });
 
   return (

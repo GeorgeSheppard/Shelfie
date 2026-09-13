@@ -3,6 +3,14 @@ import { mockJson, mockImage, fakeImageFile } from "./mocks";
 
 const REQUEST_ID = "req-1";
 
+const book = {
+  name: "The Midnight Library",
+  author: "Matt Haig",
+  description: "A novel about infinite possibilities.",
+  reason: "You enjoy speculative fiction.",
+  amazonLink: "https://amazon.com/midnight-library",
+};
+
 test.describe("Profile page", () => {
   test("shows a fallback when the profile can't be found", async ({ page }) => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
@@ -138,6 +146,60 @@ test.describe("Profile page", () => {
     await page.getByRole("button", { name: "Save preferences" }).click();
 
     await expect(page).toHaveURL(/\/recommendations\/rec-3\?new=true/);
+  });
+
+  test("shows the saved preference after navigating away and back in-app", async ({ page }) => {
+    // Regression test: the profile page was visited once already (seeding React Query's
+    // cache with the pre-save value), preferences are saved, and the user navigates to the
+    // resulting recommendation and back to profile via the in-app link (no full page
+    // reload) — they should see the value they just saved, not the stale cached one from
+    // the first visit.
+    let savedPreferences: string | null = null;
+    await page.route(`**/api/profile/${REQUEST_ID}`, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ images: [], customPreferences: savedPreferences, success: true }),
+      })
+    );
+    await page.route(`**/api/profile/${REQUEST_ID}/preferences`, (route) => {
+      const body = new URLSearchParams(route.request().postData() ?? "");
+      savedPreferences = body.get("customPreferences");
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ recommendationId: "rec-3", success: true }),
+      });
+    });
+    await mockJson(page, "**/api/recommendations/rec-3", [
+      {
+        status: 200,
+        body: {
+          requestId: REQUEST_ID,
+          hasEmail: false,
+          isRecurringMonthly: false,
+          recommendations: [book],
+          success: true,
+        },
+      },
+    ]);
+
+    // First visit — seeds the query cache with customPreferences: null.
+    await page.goto(`/profile/${REQUEST_ID}`);
+    await expect(page.getByPlaceholder(/i'd love more sci-fi/i)).toHaveValue("");
+
+    await page.getByPlaceholder(/i'd love more sci-fi/i).fill("More fantasy, less romance");
+    await page.getByRole("button", { name: "Save preferences" }).click();
+    await expect(page).toHaveURL(/\/recommendations\/rec-3\?new=true/);
+
+    // Navigate back to the same profile page via the in-app link, not a fresh page load —
+    // this is what actually exposes a stale React Query cache / un-synced local state.
+    await page.getByRole("button", { name: "Manage your profile" }).click();
+    await expect(page).toHaveURL(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByPlaceholder(/i'd love more sci-fi/i)).toHaveValue(
+      "More fantasy, less romance"
+    );
   });
 
   test("shows the backend's message when preferences are rejected", async ({ page }) => {

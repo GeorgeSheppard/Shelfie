@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   usePostApiProfileRequestIdPreferences,
+  getGetApiProfileRequestIdQueryKey,
   PostApiProfileRequestIdPreferences400,
 } from "@/api/generated/hooks";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { isAxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   requestId: string;
@@ -18,9 +20,23 @@ const MAX_LENGTH = 2000;
 export const PreferencesForm = ({ requestId, initialValue, onSaved }: Props) => {
   const [value, setValue] = useState(initialValue ?? "");
 
+  // Re-sync when the fetched value changes — e.g. React Query showing a stale cached
+  // profile first (from a previous visit) before its background refetch resolves.
+  useEffect(() => {
+    setValue(initialValue ?? "");
+  }, [initialValue]);
+
+  const queryClient = useQueryClient();
   const mutation = usePostApiProfileRequestIdPreferences({
     mutation: {
-      onSuccess: (data) => onSaved(data.recommendationId),
+      onSuccess: (data) => {
+        // Otherwise navigating back to this page can show the pre-save cached value
+        // before the background refetch catches up.
+        queryClient.invalidateQueries({
+          queryKey: getGetApiProfileRequestIdQueryKey(requestId),
+        });
+        onSaved(data.recommendationId);
+      },
     },
   });
 

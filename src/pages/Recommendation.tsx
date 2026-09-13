@@ -7,6 +7,7 @@ import {
 } from "@/components/FrequencyForm/validator";
 import { HomeLoading } from "@/components/HomeLoading";
 import { RecommendationsList } from "@/components/RecommendationsList/RecommendationsList";
+import { UnsubscribeButton } from "@/components/UnsubscribeButton/UnsubscribeButton";
 import { Button } from "@/components/ui/button";
 import { useRecommendations } from "@/lib/hooks/useRecommendations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -133,6 +134,22 @@ export default function Recommendation() {
         </>
       )}
       {booksQuery.data && <RecommendationsList books={booksQuery.data} />}
+      {booksQuery.data && (
+        <Button
+          variant="link"
+          size="sm"
+          aria-label="Manage your profile"
+          onClick={() => navigate(`/profile/${booksQuery.data.requestId}`)}
+        >
+          Add more books or tailor your recommendations
+        </Button>
+      )}
+      {booksQuery.data?.hasEmail && (
+        <UnsubscribeButton
+          requestId={booksQuery.data.requestId}
+          onUnsubscribed={() => booksQuery.refetch()}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,65 @@
+import { useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { AXIOS_INSTANCE } from "@/lib/axios";
+import { Button } from "@/components/ui/button";
+import { ACCEPTED_IMAGE_FORMATS } from "@/components/RecommendationForm/validator";
+
+interface Props {
+  requestId: string;
+  onAdded: () => void;
+}
+
+export const AddImagesButton = ({ requestId, onAdded }: Props) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Custom mutation for multiple file upload, matching the from-bookcase upload on Home.
+  const mutation = useMutation({
+    mutationFn: async (files: File[]) => {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("bookcase", file));
+
+      const { data } = await AXIOS_INSTANCE.post<{ imagesAdded: number; success: true }>(
+        `/api/profile/${requestId}/images`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          signal: AbortSignal.timeout(120000),
+        }
+      );
+      return data;
+    },
+    onSuccess: onAdded,
+  });
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        multiple
+        accept={[...ACCEPTED_IMAGE_FORMATS, ".heic", ".heif"].join(",")}
+        onChange={(event) => {
+          const files = event.target.files;
+          event.target.value = "";
+          if (!files || files.length === 0) return;
+          mutation.mutate(Array.from(files));
+        }}
+      />
+      <Button
+        type="button"
+        variant="outline"
+        aria-label="Add more photos"
+        disabled={mutation.isPending}
+        onClick={() => inputRef.current?.click()}
+      >
+        {mutation.isPending ? "Uploading..." : "Add more photos"}
+      </Button>
+      {mutation.isError && (
+        <p className="text-sm text-destructive">
+          Something went wrong uploading your photos, please try again.
+        </p>
+      )}
+    </>
+  );
+};

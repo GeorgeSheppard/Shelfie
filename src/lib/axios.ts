@@ -1,7 +1,8 @@
 import Axios, { AxiosRequestConfig } from 'axios';
 
 // Use environment variable for API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.georgesheppard.dev';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'https://api.georgesheppard.dev';
 
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: API_BASE_URL,

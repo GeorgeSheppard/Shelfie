@@ -6,6 +6,7 @@ import { lazy, Suspense } from "react";
 
 const Recommendation = lazy(() => import("./pages/Recommendation"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 export const Pages = () => {
   return (
@@ -20,6 +21,14 @@ export const Pages = () => {
         }
       />
       <Route path="/support" element={<Support />} />
+      <Route
+        path="/profile/:requestId"
+        element={
+          <Suspense fallback={null}>
+            <Profile />
+          </Suspense>
+        }
+      />
       <Route
         path="/unsubscribe/:requestId"
         element={

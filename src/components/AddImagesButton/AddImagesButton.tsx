@@ -6,7 +6,7 @@ import { ACCEPTED_IMAGE_FORMATS } from "@/components/RecommendationForm/validato
 
 interface Props {
   requestId: string;
-  onAdded: () => void;
+  onAdded: (recommendationId: string) => void;
 }
 
 export const AddImagesButton = ({ requestId, onAdded }: Props) => {
@@ -18,17 +18,17 @@ export const AddImagesButton = ({ requestId, onAdded }: Props) => {
       const formData = new FormData();
       files.forEach((file) => formData.append("bookcase", file));
 
-      const { data } = await AXIOS_INSTANCE.post<{ imagesAdded: number; success: true }>(
-        `/api/profile/${requestId}/images`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-          signal: AbortSignal.timeout(120000),
-        }
-      );
+      const { data } = await AXIOS_INSTANCE.post<{
+        imagesAdded: number;
+        recommendationId: string;
+        success: true;
+      }>(`/api/profile/${requestId}/images`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        signal: AbortSignal.timeout(120000),
+      });
       return data;
     },
-    onSuccess: onAdded,
+    onSuccess: (data) => onAdded(data.recommendationId),
   });
 
   return (

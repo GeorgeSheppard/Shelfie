@@ -10,14 +10,19 @@ import { isAxiosError } from "axios";
 interface Props {
   requestId: string;
   initialValue: string | null;
+  onSaved: (recommendationId: string) => void;
 }
 
 const MAX_LENGTH = 2000;
 
-export const PreferencesForm = ({ requestId, initialValue }: Props) => {
+export const PreferencesForm = ({ requestId, initialValue, onSaved }: Props) => {
   const [value, setValue] = useState(initialValue ?? "");
 
-  const mutation = usePostApiProfileRequestIdPreferences();
+  const mutation = usePostApiProfileRequestIdPreferences({
+    mutation: {
+      onSuccess: (data) => onSaved(data.recommendationId),
+    },
+  });
 
   const errorMessage = isAxiosError<PostApiProfileRequestIdPreferences400>(
     mutation.error
@@ -44,9 +49,6 @@ export const PreferencesForm = ({ requestId, initialValue }: Props) => {
       >
         {mutation.isPending ? "Saving..." : "Save"}
       </Button>
-      {mutation.isSuccess && (
-        <p className="text-sm font-light opacity-80">Saved!</p>
-      )}
       {mutation.isError && (
         <p className="text-sm text-destructive max-w-xs">
           {errorMessage ?? "Something went wrong, please try again."}

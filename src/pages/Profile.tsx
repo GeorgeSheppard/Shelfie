@@ -46,7 +46,9 @@ export default function Profile() {
         />
         <AddImagesButton
           requestId={requestId}
-          onAdded={() => profileQuery.refetch()}
+          onAdded={(recommendationId) =>
+            navigate(`/recommendations/${recommendationId}?new=true`)
+          }
         />
       </div>
       <div className="flex flex-col gap-4 items-center">
@@ -58,6 +60,9 @@ export default function Profile() {
         <PreferencesForm
           requestId={requestId}
           initialValue={profileQuery.data.customPreferences}
+          onSaved={(recommendationId) =>
+            navigate(`/recommendations/${recommendationId}?new=true`)
+          }
         />
       </div>
     </div>

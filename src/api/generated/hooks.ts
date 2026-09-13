@@ -316,10 +316,16 @@ export type PostApiProfileRequestIdImagesBody = {
 
 export type PostApiProfileRequestIdImages200 = {
   imagesAdded: number;
+  recommendationId: string;
   success: true;
 };
 
 export type PostApiProfileRequestIdImages400 = {
+  error: string;
+  success: false;
+};
+
+export type PostApiProfileRequestIdImages500 = {
   error: string;
   success: false;
 };
@@ -330,10 +336,16 @@ export type PostApiProfileRequestIdPreferencesBody = {
 };
 
 export type PostApiProfileRequestIdPreferences200 = {
+  recommendationId: string;
   success: true;
 };
 
 export type PostApiProfileRequestIdPreferences400 = {
+  error: string;
+  success: false;
+};
+
+export type PostApiProfileRequestIdPreferences500 = {
   error: string;
   success: false;
 };
@@ -1710,7 +1722,7 @@ if(postApiProfileRequestIdImagesBody?.bookcase !== undefined) {
 
 
 
-export const getPostApiProfileRequestIdImagesMutationOptions = <TError = PostApiProfileRequestIdImages400,
+export const getPostApiProfileRequestIdImagesMutationOptions = <TError = PostApiProfileRequestIdImages400 | PostApiProfileRequestIdImages500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdImages>>, TError,{requestId: string;data?: PostApiProfileRequestIdImagesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdImages>>, TError,{requestId: string;data?: PostApiProfileRequestIdImagesBody}, TContext> => {
 
@@ -1739,9 +1751,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiProfileRequestIdImagesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiProfileRequestIdImages>>>
     export type PostApiProfileRequestIdImagesMutationBody = PostApiProfileRequestIdImagesBody | undefined
-    export type PostApiProfileRequestIdImagesMutationError = PostApiProfileRequestIdImages400
+    export type PostApiProfileRequestIdImagesMutationError = PostApiProfileRequestIdImages400 | PostApiProfileRequestIdImages500
 
-    export const usePostApiProfileRequestIdImages = <TError = PostApiProfileRequestIdImages400,
+    export const usePostApiProfileRequestIdImages = <TError = PostApiProfileRequestIdImages400 | PostApiProfileRequestIdImages500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdImages>>, TError,{requestId: string;data?: PostApiProfileRequestIdImagesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiProfileRequestIdImages>>,
@@ -1774,7 +1786,7 @@ if(postApiProfileRequestIdPreferencesBody.customPreferences !== undefined) {
 
 
 
-export const getPostApiProfileRequestIdPreferencesMutationOptions = <TError = PostApiProfileRequestIdPreferences400,
+export const getPostApiProfileRequestIdPreferencesMutationOptions = <TError = PostApiProfileRequestIdPreferences400 | PostApiProfileRequestIdPreferences500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext> => {
 
@@ -1803,9 +1815,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiProfileRequestIdPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>>
     export type PostApiProfileRequestIdPreferencesMutationBody = PostApiProfileRequestIdPreferencesBody
-    export type PostApiProfileRequestIdPreferencesMutationError = PostApiProfileRequestIdPreferences400
+    export type PostApiProfileRequestIdPreferencesMutationError = PostApiProfileRequestIdPreferences400 | PostApiProfileRequestIdPreferences500
 
-    export const usePostApiProfileRequestIdPreferences = <TError = PostApiProfileRequestIdPreferences400,
+    export const usePostApiProfileRequestIdPreferences = <TError = PostApiProfileRequestIdPreferences400 | PostApiProfileRequestIdPreferences500,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>,

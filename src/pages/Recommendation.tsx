@@ -114,6 +114,16 @@ export default function Recommendation() {
 
   return (
     <div className="flex flex-col gap-4 items-center text-center">
+      {booksQuery.data && (
+        <Button
+          variant="link"
+          size="sm"
+          aria-label="Manage your profile"
+          onClick={() => navigate(`/profile/${booksQuery.data.requestId}`)}
+        >
+          Add more books or tailor your recommendations
+        </Button>
+      )}
       {missingInformation && hasRecommendations && (
         <>
           <p className="max-w-md text-balance font-light opacity-80 dot break-words">
@@ -134,16 +144,6 @@ export default function Recommendation() {
         </>
       )}
       {booksQuery.data && <RecommendationsList books={booksQuery.data} />}
-      {booksQuery.data && (
-        <Button
-          variant="link"
-          size="sm"
-          aria-label="Manage your profile"
-          onClick={() => navigate(`/profile/${booksQuery.data.requestId}`)}
-        >
-          Add more books or tailor your recommendations
-        </Button>
-      )}
       {booksQuery.data?.hasEmail && (
         <UnsubscribeButton
           requestId={booksQuery.data.requestId}

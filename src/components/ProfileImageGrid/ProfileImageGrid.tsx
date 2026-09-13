@@ -25,6 +25,8 @@ export const ProfileImageGrid = ({ requestId, images, onChanged }: Props) => {
           <img
             src={`${API_BASE_URL}/api/profile/${requestId}/images/${image.id}`}
             alt="Bookcase"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover rounded-md"
           />
           <Button

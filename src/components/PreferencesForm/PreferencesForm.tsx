@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { usePostApiProfileRequestIdPreferences } from "@/api/generated/hooks";
+import {
+  usePostApiProfileRequestIdPreferences,
+  PostApiProfileRequestIdPreferences400,
+} from "@/api/generated/hooks";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { isAxiosError } from "axios";
 
 interface Props {
   requestId: string;
@@ -14,6 +18,12 @@ export const PreferencesForm = ({ requestId, initialValue }: Props) => {
   const [value, setValue] = useState(initialValue ?? "");
 
   const mutation = usePostApiProfileRequestIdPreferences();
+
+  const errorMessage = isAxiosError<PostApiProfileRequestIdPreferences400>(
+    mutation.error
+  )
+    ? mutation.error.response?.data.error
+    : undefined;
 
   return (
     <div className="flex flex-col gap-2 w-full max-w-screen-sm items-center">
@@ -38,8 +48,8 @@ export const PreferencesForm = ({ requestId, initialValue }: Props) => {
         <p className="text-sm font-light opacity-80">Saved!</p>
       )}
       {mutation.isError && (
-        <p className="text-sm text-destructive">
-          Something went wrong, please try again.
+        <p className="text-sm text-destructive max-w-xs">
+          {errorMessage ?? "Something went wrong, please try again."}
         </p>
       )}
     </div>

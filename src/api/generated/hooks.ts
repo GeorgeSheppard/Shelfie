@@ -287,8 +287,17 @@ export type GetApiProfileRequestId404 = {
   success: false;
 };
 
-export type GetApiProfileImagesImageId404 = {
+export type GetApiProfileRequestIdImagesImageId404 = {
   error: string;
+};
+
+export type DeleteApiProfileRequestIdImagesImageId200 = {
+  success: true;
+};
+
+export type DeleteApiProfileRequestIdImagesImageId404 = {
+  error: string;
+  success: false;
 };
 
 export type PostApiProfileRequestIdImagesBody = {
@@ -306,15 +315,6 @@ export type PostApiProfileRequestIdImages400 = {
   success: false;
 };
 
-export type DeleteApiProfileRequestIdImagesImageId200 = {
-  success: true;
-};
-
-export type DeleteApiProfileRequestIdImagesImageId404 = {
-  error: string;
-  success: false;
-};
-
 export type PostApiProfileRequestIdPreferencesBody = {
   /** @maxLength 2000 */
   customPreferences?: string;
@@ -322,6 +322,11 @@ export type PostApiProfileRequestIdPreferencesBody = {
 
 export type PostApiProfileRequestIdPreferences200 = {
   success: true;
+};
+
+export type PostApiProfileRequestIdPreferences400 = {
+  error: string;
+  success: false;
 };
 
 export type PostMcpAuthToken200 = {
@@ -1521,14 +1526,15 @@ export function useGetApiProfileRequestId<TData = Awaited<ReturnType<typeof getA
 
 
 
-export const getApiProfileImagesImageId = (
+export const getApiProfileRequestIdImagesImageId = (
+    requestId: string,
     imageId: number,
  options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
 ) => {
 
 
       return axiosInstance<Blob>(
-      {url: `/api/profile/images/${imageId}`, method: 'GET',
+      {url: `/api/profile/${requestId}/images/${imageId}`, method: 'GET',
         responseType: 'blob', signal
     },
       options);
@@ -1537,66 +1543,72 @@ export const getApiProfileImagesImageId = (
 
 
 
-export const getGetApiProfileImagesImageIdQueryKey = (imageId: number,) => {
+export const getGetApiProfileRequestIdImagesImageIdQueryKey = (requestId: string,
+    imageId: number,) => {
     return [
-    `/api/profile/images/${imageId}`
+    `/api/profile/${requestId}/images/${imageId}`
     ] as const;
     }
 
 
-export const getGetApiProfileImagesImageIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError = GetApiProfileImagesImageId404>(imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+export const getGetApiProfileRequestIdImagesImageIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError = GetApiProfileRequestIdImagesImageId404>(requestId: string,
+    imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileImagesImageIdQueryKey(imageId);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileRequestIdImagesImageIdQueryKey(requestId,imageId);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileImagesImageId>>> = ({ signal }) => getApiProfileImagesImageId(imageId, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>> = ({ signal }) => getApiProfileRequestIdImagesImageId(requestId,imageId, requestOptions, signal);
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: imageId !== null && imageId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: requestId !== null && requestId !== undefined && imageId !== null && imageId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiProfileImagesImageIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileImagesImageId>>>
-export type GetApiProfileImagesImageIdQueryError = GetApiProfileImagesImageId404
+export type GetApiProfileRequestIdImagesImageIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>>
+export type GetApiProfileRequestIdImagesImageIdQueryError = GetApiProfileRequestIdImagesImageId404
 
 
-export function useGetApiProfileImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError = GetApiProfileImagesImageId404>(
- imageId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData>> & Pick<
+export function useGetApiProfileRequestIdImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError = GetApiProfileRequestIdImagesImageId404>(
+ requestId: string,
+    imageId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiProfileImagesImageId>>,
+          Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>,
           TError,
-          Awaited<ReturnType<typeof getApiProfileImagesImageId>>
+          Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError = GetApiProfileImagesImageId404>(
- imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData>> & Pick<
+export function useGetApiProfileRequestIdImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError = GetApiProfileRequestIdImagesImageId404>(
+ requestId: string,
+    imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiProfileImagesImageId>>,
+          Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>,
           TError,
-          Awaited<ReturnType<typeof getApiProfileImagesImageId>>
+          Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>
         > , 'initialData'
       >, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiProfileImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError = GetApiProfileImagesImageId404>(
- imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+export function useGetApiProfileRequestIdImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError = GetApiProfileRequestIdImagesImageId404>(
+ requestId: string,
+    imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiProfileImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError = GetApiProfileImagesImageId404>(
- imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+export function useGetApiProfileRequestIdImagesImageId<TData = Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError = GetApiProfileRequestIdImagesImageId404>(
+ requestId: string,
+    imageId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdImagesImageId>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiProfileImagesImageIdQueryOptions(imageId,options)
+  const queryOptions = getGetApiProfileRequestIdImagesImageIdQueryOptions(requestId,imageId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1608,6 +1620,64 @@ export function useGetApiProfileImagesImageId<TData = Awaited<ReturnType<typeof 
 
 
 
+
+export const deleteApiProfileRequestIdImagesImageId = (
+    requestId: string,
+    imageId: number,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+
+
+      return axiosInstance<DeleteApiProfileRequestIdImagesImageId200>(
+      {url: `/api/profile/${requestId}/images/${imageId}`, method: 'DELETE', signal
+    },
+      options);
+    }
+
+
+
+
+export const getDeleteApiProfileRequestIdImagesImageIdMutationOptions = <TError = DeleteApiProfileRequestIdImagesImageId404,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext> => {
+
+const mutationKey = ['deleteApiProfileRequestIdImagesImageId'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, {requestId: string;imageId: number}> = (props) => {
+          const {requestId,imageId} = props ?? {};
+
+          return  deleteApiProfileRequestIdImagesImageId(requestId,imageId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteApiProfileRequestIdImagesImageIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>>
+
+    export type DeleteApiProfileRequestIdImagesImageIdMutationError = DeleteApiProfileRequestIdImagesImageId404
+
+    export const useDeleteApiProfileRequestIdImagesImageId = <TError = DeleteApiProfileRequestIdImagesImageId404,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>,
+        TError,
+        {requestId: string;imageId: number},
+        TContext
+      > => {
+      return useMutation(getDeleteApiProfileRequestIdImagesImageIdMutationOptions(options), queryClient);
+    }
 
 export const postApiProfileRequestIdImages = (
     requestId: string,
@@ -1673,64 +1743,6 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getPostApiProfileRequestIdImagesMutationOptions(options), queryClient);
     }
 
-export const deleteApiProfileRequestIdImagesImageId = (
-    requestId: string,
-    imageId: number,
- options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
-) => {
-
-
-      return axiosInstance<DeleteApiProfileRequestIdImagesImageId200>(
-      {url: `/api/profile/${requestId}/images/${imageId}`, method: 'DELETE', signal
-    },
-      options);
-    }
-
-
-
-
-export const getDeleteApiProfileRequestIdImagesImageIdMutationOptions = <TError = DeleteApiProfileRequestIdImagesImageId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext>, request?: SecondParameter<typeof axiosInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext> => {
-
-const mutationKey = ['deleteApiProfileRequestIdImagesImageId'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, {requestId: string;imageId: number}> = (props) => {
-          const {requestId,imageId} = props ?? {};
-
-          return  deleteApiProfileRequestIdImagesImageId(requestId,imageId,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type DeleteApiProfileRequestIdImagesImageIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>>
-
-    export type DeleteApiProfileRequestIdImagesImageIdMutationError = DeleteApiProfileRequestIdImagesImageId404
-
-    export const useDeleteApiProfileRequestIdImagesImageId = <TError = DeleteApiProfileRequestIdImagesImageId404,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>, TError,{requestId: string;imageId: number}, TContext>, request?: SecondParameter<typeof axiosInstance>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteApiProfileRequestIdImagesImageId>>,
-        TError,
-        {requestId: string;imageId: number},
-        TContext
-      > => {
-      return useMutation(getDeleteApiProfileRequestIdImagesImageIdMutationOptions(options), queryClient);
-    }
-
 export const postApiProfileRequestIdPreferences = (
     requestId: string,
     postApiProfileRequestIdPreferencesBody: PostApiProfileRequestIdPreferencesBody,
@@ -1753,7 +1765,7 @@ if(postApiProfileRequestIdPreferencesBody.customPreferences !== undefined) {
 
 
 
-export const getPostApiProfileRequestIdPreferencesMutationOptions = <TError = unknown,
+export const getPostApiProfileRequestIdPreferencesMutationOptions = <TError = PostApiProfileRequestIdPreferences400,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
 ): UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext> => {
 
@@ -1782,9 +1794,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type PostApiProfileRequestIdPreferencesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>>
     export type PostApiProfileRequestIdPreferencesMutationBody = PostApiProfileRequestIdPreferencesBody
-    export type PostApiProfileRequestIdPreferencesMutationError = unknown
+    export type PostApiProfileRequestIdPreferencesMutationError = PostApiProfileRequestIdPreferences400
 
-    export const usePostApiProfileRequestIdPreferences = <TError = unknown,
+    export const usePostApiProfileRequestIdPreferences = <TError = PostApiProfileRequestIdPreferences400,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>, TError,{requestId: string;data: PostApiProfileRequestIdPreferencesBody}, TContext>, request?: SecondParameter<typeof axiosInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postApiProfileRequestIdPreferences>>,

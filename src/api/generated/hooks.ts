@@ -260,9 +260,8 @@ export type GetApiQueueDueRecommendations401 = {
 };
 
 export type GetApiReextractRecurringBooks200 = {
-  totalUsers: number;
-  processedUsers: number;
-  skippedUsers: number;
+  totalImages: number;
+  processedImages: number;
   failures: number;
 };
 
@@ -270,9 +269,19 @@ export type GetApiReextractRecurringBooks401 = {
   error: string;
 };
 
+export type GetApiProfileRequestId200ImagesItemExtractedBooksItem = {
+  title: string;
+  /** @nullable */
+  author: string | null;
+};
+
 export type GetApiProfileRequestId200ImagesItem = {
   id: number;
   contentType: string;
+  /** @nullable */
+  extractedBooks: GetApiProfileRequestId200ImagesItemExtractedBooksItem[] | null;
+  /** @nullable */
+  processedUtc: string | null;
 };
 
 export type GetApiProfileRequestId200 = {

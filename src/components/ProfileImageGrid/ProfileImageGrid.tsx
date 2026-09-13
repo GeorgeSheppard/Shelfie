@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 interface Props {
   requestId: string;
-  images: { id: number; contentType: string }[];
+  images: { id: number; contentType: string; accessToken: string }[];
   onChanged: () => void;
 }
 
@@ -23,7 +23,7 @@ export const ProfileImageGrid = ({ requestId, images, onChanged }: Props) => {
       {images.map((image) => (
         <div key={image.id} className="relative aspect-square">
           <img
-            src={`${API_BASE_URL}/api/profile/${requestId}/images/${image.id}`}
+            src={`${API_BASE_URL}/api/profile/images/${image.id}/${image.accessToken}`}
             alt="Bookcase"
             className="w-full h-full object-cover rounded-md"
           />

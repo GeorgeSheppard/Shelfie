@@ -2,7 +2,7 @@ export const PrivacyPolicy = ({ supportEmail }: { supportEmail: string }) => {
   return (
     <div className="flex flex-col gap-6 max-w-lg m-auto">
       <h1 className="underline">Privacy Policy</h1>
-      <h1>Effective Date: 20/03/2025</h1>
+      <h1>Effective Date: 16/09/2026</h1>
 
       <div className="flex flex-col gap-2">
         <h2 className="underline">1. Introduction</h2>
@@ -30,8 +30,12 @@ export const PrivacyPolicy = ({ supportEmail }: { supportEmail: string }) => {
           </li>
           <li>
             <strong>Email (Optional)</strong>: If you provide your email, we use
-            it to send you recommendations. If you sign up for recurring
-            recommendations, we retain your email until you opt out.
+            it to send you recommendations for that bookcase. We retain your
+            email for as long as your bookcase remains active (e.g. you add more
+            photos or tailor your recommendations) so we can send you those
+            updates too, or until you opt out. If you sign up for recurring
+            recommendations, we retain your email until you opt out of those as
+            well.
           </li>
           <li>
             <strong>IP Address</strong>: We collect your IP address to determine
@@ -56,9 +60,11 @@ export const PrivacyPolicy = ({ supportEmail }: { supportEmail: string }) => {
         <h2 className="underline">4. Data Storage & Security</h2>
         <p>
           Images are stored securely on our servers. Emails are encrypted for
-          security. We delete one-time-use emails after sending recommendations
-          unless you have subscribed to recurring recommendations. You can
-          request the deletion of your data at any time.
+          security. We keep your email for as long as it's useful for sending
+          you recommendations for that bookcase — including any you request
+          later by adding more photos or updating your preferences — and delete
+          it once you unsubscribe. You can request the deletion of your data at
+          any time.
         </p>
       </div>
       <div className="flex flex-col gap-2">
@@ -84,8 +90,9 @@ export const PrivacyPolicy = ({ supportEmail }: { supportEmail: string }) => {
         <p>You have the following rights: </p>
         <ul>
           <li>
-            <strong>Opt-Out</strong>: You can unsubscribe from recurring emails
-            at any time.
+            <strong>Opt-Out</strong>: You can unsubscribe at any time, whether or
+            not you signed up for recurring emails, which deletes your stored
+            email immediately.
           </li>
           <li>
             <strong>Data Deletion</strong>: You can request that we delete your

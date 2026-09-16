@@ -148,6 +148,41 @@ test.describe("Profile page", () => {
     await expect(page).toHaveURL(/\/recommendations\/rec-3\?new=true/);
   });
 
+  test("regenerating from saved preferences doesn't ask a one-time-email user for their email again", async ({
+    page,
+  }) => {
+    // Regression test: a user who gave an email for their first recommendation but never
+    // opted into monthly emails (hasEmail: true, isRecurringMonthly: false) then tailors
+    // their preferences on the profile page. The resulting regenerated recommendation should
+    // still know about their email — it must not fall back to asking them to fill it in again.
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/preferences`, [
+      { status: 200, body: { recommendationId: "rec-4", success: true } },
+    ]);
+    await mockJson(page, "**/api/recommendations/rec-4", [
+      {
+        status: 200,
+        body: {
+          requestId: REQUEST_ID,
+          hasEmail: true,
+          isRecurringMonthly: false,
+          recommendations: null,
+          success: true,
+        },
+      },
+    ]);
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+    await page.getByPlaceholder(/i'd love more sci-fi/i).fill("More fantasy, less romance");
+    await page.getByRole("button", { name: "Save preferences" }).click();
+
+    await expect(page).toHaveURL(/\/recommendations\/rec-4\?new=true/);
+    await expect(page.getByText(/Feel free to close this page/i)).toBeVisible();
+    await expect(page.getByLabel(/email/i)).not.toBeVisible();
+  });
+
   test("shows the saved preference after navigating away and back in-app", async ({ page }) => {
     // Regression test: the profile page was visited once already (seeding React Query's
     // cache with the pre-save value), preferences are saved, and the user navigates to the

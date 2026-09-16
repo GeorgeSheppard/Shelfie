@@ -88,6 +88,24 @@ test.describe("Recommendations page", () => {
     ).not.toBeVisible();
   });
 
+  test("only asks about monthly emails (not the email itself) once one is already on file", async ({
+    page,
+  }) => {
+    // A user who gave an email for an earlier recommendation but never opted into monthly
+    // emails should just be asked about the recurring toggle here, not for their email again.
+    await mockJson(page, `**/api/recommendations/${REC_ID}`, [
+      {
+        status: 200,
+        body: { ...baseRecommendation, hasEmail: true, recommendations: [book] },
+      },
+    ]);
+
+    await page.goto(`/recommendations/${REC_ID}`);
+
+    await expect(page.getByText(/every month/i)).toBeVisible();
+    await expect(page.getByLabel(/email/i)).not.toBeVisible();
+  });
+
   test("hides the frequency form and shows unsubscribe once fully subscribed", async ({
     page,
   }) => {

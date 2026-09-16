@@ -44,9 +44,10 @@ export const ProfileImageGrid = ({ requestId, images, onChanged }: Props) => {
 };
 
 /**
- * The grid slot is already a fixed aspect-square box, so nothing shifts as photos load —
- * but each one popping in abruptly at a different time still reads as a "jump". Fading it
- * in over a muted placeholder smooths that out instead.
+ * The grid slot is already a fixed aspect-square box, so nothing shifts as photos load — but
+ * an image popping in abruptly (or the browser's broken-image glyph flashing while it's still
+ * loading) still reads as a "jump". A pulsing skeleton keeps the slot visibly "loading" the
+ * whole time, then fades into the real photo once it arrives, so nothing pops in unannounced.
  */
 const BookcaseImage = ({ src }: { src: string }) => {
   const [loaded, setLoaded] = useState(false);
@@ -57,16 +58,24 @@ const BookcaseImage = ({ src }: { src: string }) => {
   }, []);
 
   return (
-    <img
-      ref={imgRef}
-      src={src}
-      alt="Bookcase"
-      loading="lazy"
-      decoding="async"
-      onLoad={() => setLoaded(true)}
-      className={`w-full h-full object-cover rounded-md bg-muted transition-opacity duration-300 ${
-        loaded ? "opacity-100" : "opacity-0"
-      }`}
-    />
+    <>
+      {!loaded && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-md bg-muted animate-pulse"
+        />
+      )}
+      <img
+        ref={imgRef}
+        src={src}
+        alt="Bookcase"
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        className={`absolute inset-0 w-full h-full object-cover rounded-md transition-opacity duration-300 ${
+          loaded ? "opacity-100" : "opacity-0"
+        }`}
+      />
+    </>
   );
 };

@@ -38,20 +38,6 @@ export default function Profile() {
   return (
     <div className="flex flex-col gap-8 items-center text-center">
       <div className="flex flex-col gap-4 items-center">
-        <h2 className="text-lg font-medium">Your bookcase photos</h2>
-        <ProfileImageGrid
-          requestId={requestId}
-          images={profileQuery.data.images}
-          onChanged={() => profileQuery.refetch()}
-        />
-        <AddImagesButton
-          requestId={requestId}
-          onAdded={(recommendationId) =>
-            navigate(`/recommendations/${recommendationId}?new=true`)
-          }
-        />
-      </div>
-      <div className="flex flex-col gap-4 items-center">
         <h2 className="text-lg font-medium">Tailor your recommendations</h2>
         <p className="max-w-md text-balance font-light opacity-80 text-sm">
           Anything specific you'd like more (or less) of in your
@@ -61,6 +47,20 @@ export default function Profile() {
           requestId={requestId}
           initialValue={profileQuery.data.customPreferences}
           onSaved={(recommendationId) =>
+            navigate(`/recommendations/${recommendationId}?new=true`)
+          }
+        />
+      </div>
+      <div className="flex flex-col gap-4 items-center">
+        <h2 className="text-lg font-medium">Your bookcase photos</h2>
+        <ProfileImageGrid
+          requestId={requestId}
+          images={profileQuery.data.images}
+          onChanged={() => profileQuery.refetch()}
+        />
+        <AddImagesButton
+          requestId={requestId}
+          onAdded={(recommendationId) =>
             navigate(`/recommendations/${recommendationId}?new=true`)
           }
         />

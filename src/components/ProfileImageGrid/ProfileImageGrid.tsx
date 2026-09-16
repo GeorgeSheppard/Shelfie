@@ -24,7 +24,7 @@ export const ProfileImageGrid = ({ requestId, images, onChanged }: Props) => {
       {images.map((image) => (
         <div key={image.id} className="relative aspect-square">
           <BookcaseImage
-            src={`${API_BASE_URL}/api/profile/${requestId}/images/${image.id}`}
+            src={`${API_BASE_URL}/api/profile/${requestId}/images/${image.id}?thumbnail=true`}
           />
           <Button
             type="button"

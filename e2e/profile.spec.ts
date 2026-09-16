@@ -51,7 +51,7 @@ test.describe("Profile page", () => {
         },
       },
     ]);
-    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1`);
+    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1*`);
 
     await page.goto(`/profile/${REQUEST_ID}`);
 
@@ -74,8 +74,8 @@ test.describe("Profile page", () => {
         }),
       })
     );
-    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1`);
-    await page.route(`**/api/profile/${REQUEST_ID}/images/1`, async (route) => {
+    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1*`);
+    await page.route(`**/api/profile/${REQUEST_ID}/images/1*`, async (route) => {
       if (route.request().method() !== "DELETE") return route.fallback();
       deleted = true;
       await route.fulfill({

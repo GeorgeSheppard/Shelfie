@@ -37,7 +37,7 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-8 items-center text-center">
-      <div className="flex flex-col gap-4 items-center">
+      <div className="flex flex-col gap-4 items-center w-full">
         <h2 className="text-lg font-medium">Tailor your recommendations</h2>
         <p className="max-w-md text-balance font-light opacity-80 text-sm">
           Anything specific you'd like more (or less) of in your
@@ -51,7 +51,7 @@ export default function Profile() {
           }
         />
       </div>
-      <div className="flex flex-col gap-4 items-center">
+      <div className="flex flex-col gap-4 items-center w-full">
         <h2 className="text-lg font-medium">Your bookcase photos</h2>
         <ProfileImageGrid
           requestId={requestId}

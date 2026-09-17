@@ -10,7 +10,9 @@ import { RecommendationsList } from "@/components/RecommendationsList/Recommenda
 import { UnsubscribeButton } from "@/components/UnsubscribeButton/UnsubscribeButton";
 import { Button } from "@/components/ui/button";
 import { useRecommendations } from "@/lib/hooks/useRecommendations";
+import { rememberLastRecommendationId } from "@/lib/lastRecommendation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
@@ -21,6 +23,13 @@ export default function Recommendation() {
 
   const newUser = !!searchParams.get("new");
   const booksQuery = useRecommendations(id);
+  const requestId = booksQuery.data?.requestId;
+
+  // So the profile page's back link still works even when it's reached via a direct or
+  // bookmarked URL, where there's no router state to carry the recommendation id.
+  useEffect(() => {
+    if (id && requestId) rememberLastRecommendationId(requestId, id);
+  }, [id, requestId]);
 
   const form = useForm<FrequencyFormSchema>({
     resolver: zodResolver(frequencyFormSchema),

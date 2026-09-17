@@ -59,6 +59,37 @@ test.describe("Profile page", () => {
     await expect(page.getByPlaceholder(/more sci-fi/i)).toHaveValue("More sci-fi please");
   });
 
+  test("still shows a working back link after a direct visit (no router state)", async ({
+    page,
+  }) => {
+    // Regression test: visiting a recommendation first (which remembers it for this request)
+    // and then going straight to the profile URL — as if via a bookmark or pasted link,
+    // losing any router state — should still produce a working back link.
+    await mockJson(page, "**/api/recommendations/rec-1", [
+      {
+        status: 200,
+        body: {
+          requestId: REQUEST_ID,
+          hasEmail: false,
+          isRecurringMonthly: false,
+          recommendations: [book],
+          success: true,
+        },
+      },
+    ]);
+    await page.goto("/recommendations/rec-1");
+    await expect(page.getByText("The Midnight Library")).toBeVisible();
+
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await page.getByRole("button", { name: "Back to recommendations" }).click();
+
+    await expect(page).toHaveURL("/recommendations/rec-1");
+  });
+
   test("loads photos one at a time instead of all at once", async ({ page }) => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
       {

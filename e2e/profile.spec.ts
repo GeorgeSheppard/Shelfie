@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mockJson, mockImage, fakeImageFile } from "./mocks";
+import { mockJson, mockImage, fakeImageFile, TINY_PNG } from "./mocks";
 
 const REQUEST_ID = "req-1";
 
@@ -57,6 +57,48 @@ test.describe("Profile page", () => {
 
     await expect(page.getByRole("img", { name: "Bookcase" })).toBeVisible();
     await expect(page.getByPlaceholder(/more sci-fi/i)).toHaveValue("More sci-fi please");
+  });
+
+  test("loads photos one at a time instead of all at once", async ({ page }) => {
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      {
+        status: 200,
+        body: {
+          images: [1, 2, 3].map((id) => ({
+            id,
+            contentType: "image/jpeg",
+            extractedBooks: null,
+            processedUtc: null,
+          })),
+          customPreferences: null,
+          success: true,
+        },
+      },
+    ]);
+
+    const requestedIds: number[] = [];
+    let resolveFirstRequested: () => void;
+    const firstRequested = new Promise<void>((resolve) => {
+      resolveFirstRequested = resolve;
+    });
+
+    await page.route(`**/api/profile/${REQUEST_ID}/images/*`, async (route) => {
+      const id = Number(new URL(route.request().url()).pathname.split("/").pop());
+      requestedIds.push(id);
+      resolveFirstRequested();
+      // Hold the first response briefly so we can assert nothing else was requested yet
+      // while it's still in flight.
+      if (id === 1) await new Promise((resolve) => setTimeout(resolve, 200));
+      await route.fulfill({ status: 200, contentType: "image/png", body: TINY_PNG });
+    });
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+    await firstRequested;
+
+    expect(requestedIds).toEqual([1]);
+
+    await expect(page.getByRole("img", { name: "Bookcase" })).toHaveCount(3);
+    expect(requestedIds).toEqual([1, 2, 3]);
   });
 
   test("removing the only photo shows the empty state", async ({ page }) => {

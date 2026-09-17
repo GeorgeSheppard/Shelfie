@@ -3,21 +3,13 @@ import { AddImagesButton } from "@/components/AddImagesButton/AddImagesButton";
 import { HomeLoading } from "@/components/HomeLoading";
 import { PreferencesForm } from "@/components/PreferencesForm/PreferencesForm";
 import { ProfileImageGrid } from "@/components/ProfileImageGrid/ProfileImageGrid";
+import { RecentRecommendations } from "@/components/RecentRecommendations/RecentRecommendations";
 import { Button } from "@/components/ui/button";
-import { getLastRecommendationId } from "@/lib/lastRecommendation";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { requestId } = useParams();
-  const location = useLocation();
-  // Prefer the id passed via router state by whichever recommendation page linked here —
-  // it's more reliable than browser history, which breaks on a refresh and can send "back"
-  // somewhere outside the app entirely. Fall back to the last recommendation this browser
-  // saw for this request, so the link still works on a direct/bookmarked visit to profile.
-  const recommendationId =
-    (location.state as { recommendationId?: string } | null)?.recommendationId ??
-    (requestId ? getLastRecommendationId(requestId) : null);
 
   const profileQuery = useGetApiProfileRequestId(requestId!, {
     query: { enabled: !!requestId },
@@ -46,16 +38,7 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-8 items-center text-center">
-      {recommendationId && (
-        <Button
-          variant="link"
-          size="sm"
-          aria-label="Back to recommendations"
-          onClick={() => navigate(`/recommendations/${recommendationId}`)}
-        >
-          ← Back to recommendations
-        </Button>
-      )}
+      <RecentRecommendations requestId={requestId} />
       <div className="flex flex-col gap-4 items-center w-full">
         <h2 className="text-lg font-medium">Tailor your recommendations</h2>
         <p className="max-w-md text-balance font-light opacity-80 text-sm">

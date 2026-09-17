@@ -12,6 +12,13 @@ const book = {
 };
 
 test.describe("Profile page", () => {
+  test.beforeEach(async ({ page }) => {
+    // Most tests don't care about this section; the couple that do override it explicitly.
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      { status: 200, body: { recommendations: [], success: true } },
+    ]);
+  });
+
   test("shows a fallback when the profile can't be found", async ({ page }) => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
       { status: 404, body: { error: "Request not found", success: false } },
@@ -59,35 +66,52 @@ test.describe("Profile page", () => {
     await expect(page.getByPlaceholder(/more sci-fi/i)).toHaveValue("More sci-fi please");
   });
 
-  test("still shows a working back link after a direct visit (no router state)", async ({
-    page,
-  }) => {
-    // Regression test: visiting a recommendation first (which remembers it for this request)
-    // and then going straight to the profile URL — as if via a bookmark or pasted link,
-    // losing any router state — should still produce a working back link.
-    await mockJson(page, "**/api/recommendations/rec-1", [
+  test("links back to recent recommendations, even on a direct visit", async ({ page }) => {
+    // Backend-driven, so this works regardless of how the profile page was reached (a direct
+    // or bookmarked URL included) — no router state or browser history involved.
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
       {
         status: 200,
         body: {
-          requestId: REQUEST_ID,
-          hasEmail: false,
-          isRecurringMonthly: false,
-          recommendations: [book],
+          recommendations: [
+            { id: "rec-2", createdUtc: "2024-02-01T00:00:00.000Z", processedUtc: null },
+            {
+              id: "rec-1",
+              createdUtc: "2024-01-01T00:00:00.000Z",
+              processedUtc: "2024-01-01T00:05:00.000Z",
+            },
+          ],
           success: true,
         },
       },
     ]);
-    await page.goto("/recommendations/rec-1");
-    await expect(page.getByText("The Midnight Library")).toBeVisible();
 
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByText("Recent recommendations")).toBeVisible();
+    await expect(page.getByText(/still processing/i)).toBeVisible();
+
+    await page
+      .getByRole("button", { name: /View recommendations from 1 Jan 2024/i })
+      .click();
+
+    await expect(page).toHaveURL("/recommendations/rec-1");
+  });
+
+  test("hides the recent recommendations section when there are none", async ({ page }) => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
       { status: 200, body: { images: [], customPreferences: null, success: true } },
     ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      { status: 200, body: { recommendations: [], success: true } },
+    ]);
+
     await page.goto(`/profile/${REQUEST_ID}`);
 
-    await page.getByRole("button", { name: "Back to recommendations" }).click();
-
-    await expect(page).toHaveURL("/recommendations/rec-1");
+    await expect(page.getByText("Recent recommendations")).not.toBeVisible();
   });
 
   test("loads photos one at a time instead of all at once", async ({ page }) => {

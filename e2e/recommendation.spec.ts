@@ -158,6 +158,9 @@ test.describe("Recommendations page", () => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
       { status: 200, body: { images: [], customPreferences: null, success: true } },
     ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      { status: 200, body: { recommendations: [], success: true } },
+    ]);
 
     await page.goto(`/recommendations/${REC_ID}`);
     await page
@@ -165,10 +168,6 @@ test.describe("Recommendations page", () => {
       .click();
 
     await expect(page).toHaveURL(`/profile/${REQUEST_ID}`);
-
-    await page.getByRole("button", { name: "Back to recommendations" }).click();
-
-    await expect(page).toHaveURL(`/recommendations/${REC_ID}`);
   });
 
   test("unsubscribing shows a confirmation step then updates the page", async ({ page }) => {

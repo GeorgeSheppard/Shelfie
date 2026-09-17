@@ -350,6 +350,23 @@ export type PostApiProfileRequestIdPreferences500 = {
   success: false;
 };
 
+export type GetApiProfileRequestIdRecommendations200RecommendationsItem = {
+  id: string;
+  createdUtc: string;
+  /** @nullable */
+  processedUtc: string | null;
+};
+
+export type GetApiProfileRequestIdRecommendations200 = {
+  recommendations: GetApiProfileRequestIdRecommendations200RecommendationsItem[];
+  success: true;
+};
+
+export type GetApiProfileRequestIdRecommendations404 = {
+  error: string;
+  success: false;
+};
+
 export type PostMcpAuthToken200 = {
   /** JWT token for MCP authentication */
   token: string;
@@ -1827,6 +1844,93 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       > => {
       return useMutation(getPostApiProfileRequestIdPreferencesMutationOptions(options), queryClient);
     }
+
+export const getApiProfileRequestIdRecommendations = (
+    requestId: string,
+ options?: SecondParameter<typeof axiosInstance>,signal?: AbortSignal
+) => {
+
+
+      return axiosInstance<GetApiProfileRequestIdRecommendations200>(
+      {url: `/api/profile/${requestId}/recommendations`, method: 'GET', signal
+    },
+      options);
+    }
+
+
+
+
+export const getGetApiProfileRequestIdRecommendationsQueryKey = (requestId: string,) => {
+    return [
+    `/api/profile/${requestId}/recommendations`
+    ] as const;
+    }
+
+
+export const getGetApiProfileRequestIdRecommendationsQueryOptions = <TData = Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError = GetApiProfileRequestIdRecommendations404>(requestId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiProfileRequestIdRecommendationsQueryKey(requestId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>> = ({ signal }) => getApiProfileRequestIdRecommendations(requestId, requestOptions, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: requestId !== null && requestId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiProfileRequestIdRecommendationsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>>
+export type GetApiProfileRequestIdRecommendationsQueryError = GetApiProfileRequestIdRecommendations404
+
+
+export function useGetApiProfileRequestIdRecommendations<TData = Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError = GetApiProfileRequestIdRecommendations404>(
+ requestId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiProfileRequestIdRecommendations<TData = Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError = GetApiProfileRequestIdRecommendations404>(
+ requestId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>,
+          TError,
+          Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiProfileRequestIdRecommendations<TData = Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError = GetApiProfileRequestIdRecommendations404>(
+ requestId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiProfileRequestIdRecommendations<TData = Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError = GetApiProfileRequestIdRecommendations404>(
+ requestId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiProfileRequestIdRecommendations>>, TError, TData>>, request?: SecondParameter<typeof axiosInstance>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiProfileRequestIdRecommendationsQueryOptions(requestId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 /**
  * Exchange a Cognito JWT for a long-lived MCP JWT token

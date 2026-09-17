@@ -32,7 +32,7 @@ export const ProfileImageGrid = ({ requestId, images, onChanged }: Props) => {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 w-full max-w-screen-md">
+    <div className="grid grid-cols-2 gap-4 w-full max-w-screen-sm">
       {images.map((image, index) => (
         <div key={image.id} className="relative aspect-square">
           <BookcaseImage

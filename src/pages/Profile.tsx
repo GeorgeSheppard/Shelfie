@@ -37,6 +37,14 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-8 items-center text-center">
+      <Button
+        variant="link"
+        size="sm"
+        aria-label="Back to recommendations"
+        onClick={() => navigate(-1)}
+      >
+        ← Back to recommendations
+      </Button>
       <div className="flex flex-col gap-4 items-center w-full">
         <h2 className="text-lg font-medium">Tailor your recommendations</h2>
         <p className="max-w-md text-balance font-light opacity-80 text-sm">

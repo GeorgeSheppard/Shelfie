@@ -4,11 +4,17 @@ import { HomeLoading } from "@/components/HomeLoading";
 import { PreferencesForm } from "@/components/PreferencesForm/PreferencesForm";
 import { ProfileImageGrid } from "@/components/ProfileImageGrid/ProfileImageGrid";
 import { Button } from "@/components/ui/button";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { requestId } = useParams();
+  const location = useLocation();
+  // Passed via router state by whichever recommendation page linked here — more reliable
+  // than browser history, which breaks on a refresh or a direct/bookmarked link and can
+  // send "back" somewhere outside the app entirely.
+  const recommendationId = (location.state as { recommendationId?: string } | null)
+    ?.recommendationId;
 
   const profileQuery = useGetApiProfileRequestId(requestId!, {
     query: { enabled: !!requestId },
@@ -37,14 +43,16 @@ export default function Profile() {
 
   return (
     <div className="flex flex-col gap-8 items-center text-center">
-      <Button
-        variant="link"
-        size="sm"
-        aria-label="Back to recommendations"
-        onClick={() => navigate(-1)}
-      >
-        ← Back to recommendations
-      </Button>
+      {recommendationId && (
+        <Button
+          variant="link"
+          size="sm"
+          aria-label="Back to recommendations"
+          onClick={() => navigate(`/recommendations/${recommendationId}`)}
+        >
+          ← Back to recommendations
+        </Button>
+      )}
       <div className="flex flex-col gap-4 items-center w-full">
         <h2 className="text-lg font-medium">Tailor your recommendations</h2>
         <p className="max-w-md text-balance font-light opacity-80 text-sm">

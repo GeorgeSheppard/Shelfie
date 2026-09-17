@@ -119,7 +119,11 @@ export default function Recommendation() {
           variant="link"
           size="sm"
           aria-label="Manage your profile"
-          onClick={() => navigate(`/profile/${booksQuery.data.requestId}`)}
+          onClick={() =>
+            navigate(`/profile/${booksQuery.data.requestId}`, {
+              state: { recommendationId: id },
+            })
+          }
         >
           Add more books or tailor your recommendations
         </Button>

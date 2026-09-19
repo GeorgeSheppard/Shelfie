@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mockJson, mockImage, fakeImageFile } from "./mocks";
+import { mockJson, mockImage, fakeImageFile, TINY_PNG } from "./mocks";
 
 const REQUEST_ID = "req-1";
 
@@ -12,6 +12,13 @@ const book = {
 };
 
 test.describe("Profile page", () => {
+  test.beforeEach(async ({ page }) => {
+    // Most tests don't care about this section; the couple that do override it explicitly.
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      { status: 200, body: { recommendations: [], success: true } },
+    ]);
+  });
+
   test("shows a fallback when the profile can't be found", async ({ page }) => {
     await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
       { status: 404, body: { error: "Request not found", success: false } },
@@ -51,12 +58,128 @@ test.describe("Profile page", () => {
         },
       },
     ]);
-    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1`);
+    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1*`);
 
     await page.goto(`/profile/${REQUEST_ID}`);
 
     await expect(page.getByRole("img", { name: "Bookcase" })).toBeVisible();
     await expect(page.getByPlaceholder(/more sci-fi/i)).toHaveValue("More sci-fi please");
+  });
+
+  test("links back to recent recommendations, even on a direct visit", async ({ page }) => {
+    // Backend-driven, so this works regardless of how the profile page was reached (a direct
+    // or bookmarked URL included) — no router state or browser history involved.
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      {
+        status: 200,
+        body: {
+          // Still-processing ones (no processedUtc) shouldn't show — nothing to view yet.
+          recommendations: [
+            { id: "rec-2", createdUtc: "2024-02-01T00:00:00.000Z", processedUtc: null },
+            {
+              id: "rec-1",
+              createdUtc: "2024-01-01T00:00:00.000Z",
+              processedUtc: "2024-01-01T00:05:00.000Z",
+            },
+          ],
+          success: true,
+        },
+      },
+    ]);
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByText("Recent recommendations")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /View recommendations from 1 Feb 2024/i })
+    ).not.toBeVisible();
+
+    await page
+      .getByRole("button", { name: /View recommendations from 1 Jan 2024/i })
+      .click();
+
+    await expect(page).toHaveURL("/recommendations/rec-1");
+  });
+
+  test("hides the recent recommendations section when there are none", async ({ page }) => {
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      { status: 200, body: { recommendations: [], success: true } },
+    ]);
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByText("Recent recommendations")).not.toBeVisible();
+  });
+
+  test("hides the recent recommendations section when none have finished processing", async ({
+    page,
+  }) => {
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      {
+        status: 200,
+        body: {
+          recommendations: [
+            { id: "rec-1", createdUtc: "2024-01-01T00:00:00.000Z", processedUtc: null },
+          ],
+          success: true,
+        },
+      },
+    ]);
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByText("Recent recommendations")).not.toBeVisible();
+  });
+
+  test("loads photos one at a time instead of all at once", async ({ page }) => {
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      {
+        status: 200,
+        body: {
+          images: [1, 2, 3].map((id) => ({
+            id,
+            contentType: "image/jpeg",
+            extractedBooks: null,
+            processedUtc: null,
+          })),
+          customPreferences: null,
+          success: true,
+        },
+      },
+    ]);
+
+    const requestedIds: number[] = [];
+    let resolveFirstRequested: () => void;
+    const firstRequested = new Promise<void>((resolve) => {
+      resolveFirstRequested = resolve;
+    });
+
+    await page.route(`**/api/profile/${REQUEST_ID}/images/*`, async (route) => {
+      const id = Number(new URL(route.request().url()).pathname.split("/").pop());
+      requestedIds.push(id);
+      resolveFirstRequested();
+      // Hold the first response briefly so we can assert nothing else was requested yet
+      // while it's still in flight.
+      if (id === 1) await new Promise((resolve) => setTimeout(resolve, 200));
+      await route.fulfill({ status: 200, contentType: "image/png", body: TINY_PNG });
+    });
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+    await firstRequested;
+
+    expect(requestedIds).toEqual([1]);
+
+    await expect(page.getByRole("img", { name: "Bookcase" })).toHaveCount(3);
+    expect(requestedIds).toEqual([1, 2, 3]);
   });
 
   test("removing the only photo shows the empty state", async ({ page }) => {
@@ -74,8 +197,8 @@ test.describe("Profile page", () => {
         }),
       })
     );
-    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1`);
-    await page.route(`**/api/profile/${REQUEST_ID}/images/1`, async (route) => {
+    await mockImage(page, `**/api/profile/${REQUEST_ID}/images/1*`);
+    await page.route(`**/api/profile/${REQUEST_ID}/images/1*`, async (route) => {
       if (route.request().method() !== "DELETE") return route.fallback();
       deleted = true;
       await route.fulfill({

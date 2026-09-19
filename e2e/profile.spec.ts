@@ -76,6 +76,7 @@ test.describe("Profile page", () => {
       {
         status: 200,
         body: {
+          // Still-processing ones (no processedUtc) shouldn't show — nothing to view yet.
           recommendations: [
             { id: "rec-2", createdUtc: "2024-02-01T00:00:00.000Z", processedUtc: null },
             {
@@ -92,7 +93,9 @@ test.describe("Profile page", () => {
     await page.goto(`/profile/${REQUEST_ID}`);
 
     await expect(page.getByText("Recent recommendations")).toBeVisible();
-    await expect(page.getByText(/still processing/i)).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /View recommendations from 1 Feb 2024/i })
+    ).not.toBeVisible();
 
     await page
       .getByRole("button", { name: /View recommendations from 1 Jan 2024/i })
@@ -107,6 +110,29 @@ test.describe("Profile page", () => {
     ]);
     await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
       { status: 200, body: { recommendations: [], success: true } },
+    ]);
+
+    await page.goto(`/profile/${REQUEST_ID}`);
+
+    await expect(page.getByText("Recent recommendations")).not.toBeVisible();
+  });
+
+  test("hides the recent recommendations section when none have finished processing", async ({
+    page,
+  }) => {
+    await mockJson(page, `**/api/profile/${REQUEST_ID}`, [
+      { status: 200, body: { images: [], customPreferences: null, success: true } },
+    ]);
+    await mockJson(page, `**/api/profile/${REQUEST_ID}/recommendations`, [
+      {
+        status: 200,
+        body: {
+          recommendations: [
+            { id: "rec-1", createdUtc: "2024-01-01T00:00:00.000Z", processedUtc: null },
+          ],
+          success: true,
+        },
+      },
     ]);
 
     await page.goto(`/profile/${REQUEST_ID}`);

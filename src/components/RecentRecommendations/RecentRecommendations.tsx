@@ -21,7 +21,9 @@ export const RecentRecommendations = ({ requestId }: Props) => {
     query: { enabled: !!requestId },
   });
 
-  const recommendations = query.data?.recommendations ?? [];
+  // Only ones that have actually finished — a link to a still-processing recommendation
+  // has nothing to show yet, so it's not worth listing.
+  const recommendations = (query.data?.recommendations ?? []).filter((r) => r.processedUtc);
   if (recommendations.length === 0) return null;
 
   return (
@@ -37,7 +39,6 @@ export const RecentRecommendations = ({ requestId }: Props) => {
               onClick={() => navigate(`/recommendations/${recommendation.id}`)}
             >
               {formatDate(recommendation.createdUtc)}
-              {!recommendation.processedUtc && " (still processing)"}
             </Button>
           </li>
         ))}
